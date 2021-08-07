@@ -177,9 +177,9 @@ class MyGame(arcade.Window):
 
     def on_update(self, delta_time):
 
-        ## Check for the right game status
-        
-        global GAME_STATUS, CURRENT_BLOCK_NUMBER, CURRENT_BLOCK_TYPE, SCORE
+        ## Check for the right game status        
+        global GAME_STATUS, CURRENT_BLOCK_NUMBER, CURRENT_BLOCK_TYPE, SCORE, BLOCKS
+
         if GAME_STATUS == 1:
 
             self.physics_engine.step()  ## Update the physics engine
@@ -210,7 +210,17 @@ class MyGame(arcade.Window):
                                     -50,
                                     SCREEN_HEIGHT-50)
 
+            ### ~ Super Jump block ~ ###
+
             SCORE = round(self.player_sprite.center_x / 240)
+            CURRENT_BLOCK_NUMBER = SCORE
+            CURRENT_BLOCK_TYPE = BLOCKS[CURRENT_BLOCK_NUMBER]
+            
+            if CURRENT_BLOCK_TYPE == 2:     ## Check for super jump block
+                if self.physics_engine.is_on_ground(self.player_sprite):  ## Check if the player is on the ground
+                    impulse = (0, PLAYER_JUMP_IMPULSE*2)        ## Make it jump twice the normal height
+                    self.physics_engine.apply_impulse(self.player_sprite, impulse)  ## Apply the jump impulse
+            
 
         ### ~ Preparing the game status ~ ###
 
@@ -227,12 +237,14 @@ class MyGame(arcade.Window):
 
     def on_key_press(self, key, modifiers):
 
+        global CUrRENT_BLOCK_TYPE
+
         ## Player jumps if the UP or W key is pressed
         
         if key == arcade.key.UP or key == arcade.key.W:
-              if self.physics_engine.is_on_ground(self.player_sprite):  ## Check if the player is on the ground
-                  impulse = (0, PLAYER_JUMP_IMPULSE)
-                  self.physics_engine.apply_impulse(self.player_sprite, impulse)  ## Apply the jump impulse
+            if self.physics_engine.is_on_ground(self.player_sprite):  ## Check if the player is on the ground
+                impulse = (0, PLAYER_JUMP_IMPULSE)
+                self.physics_engine.apply_impulse(self.player_sprite, impulse)  ## Apply the jump impulse
 
         ## If the player moves left or right, apply a force in that direction and turn off friction for the time being
                   
