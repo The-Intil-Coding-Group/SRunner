@@ -80,11 +80,12 @@ class MyGame(arcade.Window):
         ### ~ Block generation ~ ###
 
         BLOCKS = [1, 1]
+        potentialValues = [1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6]
         
         while len(BLOCKS) < 998:
-            x = random.randint(1,4)
+            x = potentialValues[random.randint(0, len(potentialValues)-1)]
             if x != BLOCKS[-1]:
-                BLOCKS.append(random.randint(1,4))
+                BLOCKS.append(x)
 
         ### ~ Sprite Loading And Lists ~ ###
         
@@ -123,21 +124,49 @@ class MyGame(arcade.Window):
             self.jumper_sprite.center_y = 40
             self.jumper_list.append(self.jumper_sprite)
 
-        ## Create the pool list and add the sprites to it
+        ## Create the hill list and add the sprites to it
 
-        self.pool_list = arcade.SpriteList()
-        image_source4 ="resources/pool.png"      ## Block type 3
+        self.hill_list = arcade.SpriteList()
+        image_source4 ="resources/hill.png"      ## Block type 3
         
         indexList = [i for i in range(len(BLOCKS)) if BLOCKS[i] == 3]
         valuesList = [i*240-120 for i in indexList]
         
         for x in valuesList:
-            self.pool_sprite = arcade.Sprite(image_source4, 1)
-            self.pool_sprite.center_x = x
-            self.pool_sprite.center_y = 2
-            self.pool_list.append(self.pool_sprite)
+            self.hill_sprite = arcade.Sprite(image_source4, 1)
+            self.hill_sprite.center_x = x
+            self.hill_sprite.center_y = 2
+            self.hill_list.append(self.hill_sprite)
 
-        ## Block type 4 is the gap
+        ## Create the bridge list and add the sprites to it
+
+        self.bridge_list = arcade.SpriteList()
+        image_source4 ="resources/bridge.png"      ## Block type 4
+        
+        indexList = [i for i in range(len(BLOCKS)) if BLOCKS[i] == 4]
+        valuesList = [i*240-120 for i in indexList]
+        
+        for x in valuesList:
+            self.bridge_sprite = arcade.Sprite(image_source4, 1)
+            self.bridge_sprite.center_x = x
+            self.bridge_sprite.center_y = 2
+            self.bridge_list.append(self.bridge_sprite)
+
+        ## Create the pool list and add the sprites to it
+
+        self.zapper_list = arcade.SpriteList()
+        image_source4 ="resources/zapper.png"      ## Block type 5
+        
+        indexList = [i for i in range(len(BLOCKS)) if BLOCKS[i] == 5]
+        valuesList = [i*240-120 for i in indexList]
+        
+        for x in valuesList:
+            self.zapper_sprite = arcade.Sprite(image_source4, 1)
+            self.zapper_sprite.center_x = x
+            self.zapper_sprite.center_y = 2
+            self.zapper_list.append(self.zapper_sprite)
+
+        ## Block type 6 is the gap
 
 
         ### ~ Physics Engine Setup ~ ###
@@ -151,9 +180,11 @@ class MyGame(arcade.Window):
         
         self.physics_engine = arcade.PymunkPhysicsEngine(damping=damping, gravity=gravity)
         self.physics_engine.add_sprite(self.player_sprite, friction=PLAYER_FRICTION, mass=PLAYER_MASS, moment=arcade.PymunkPhysicsEngine.MOMENT_INF, collision_type="player", max_horizontal_velocity=PLAYER_MAX_HORIZONTAL_SPEED, max_vertical_velocity=PLAYER_MAX_VERTICAL_SPEED)
-        self.physics_engine.add_sprite_list(self.floor_list, friction=0.4, collision_type="item", body_type=arcade.PymunkPhysicsEngine.STATIC)
-        self.physics_engine.add_sprite_list(self.pool_list, friction=0.4, collision_type="item", body_type=arcade.PymunkPhysicsEngine.STATIC)
-        self.physics_engine.add_sprite_list(self.jumper_list, friction=0.1, collision_type="item", body_type=arcade.PymunkPhysicsEngine.STATIC)
+        self.physics_engine.add_sprite_list(self.floor_list, friction=0.6, collision_type="item", body_type=arcade.PymunkPhysicsEngine.STATIC)
+        self.physics_engine.add_sprite_list(self.bridge_list, friction=0.1, collision_type="item", body_type=arcade.PymunkPhysicsEngine.STATIC)
+        self.physics_engine.add_sprite_list(self.jumper_list, friction=0.6, collision_type="item", body_type=arcade.PymunkPhysicsEngine.STATIC)
+        self.physics_engine.add_sprite_list(self.hill_list, friction=0.4, collision_type="item", body_type=arcade.PymunkPhysicsEngine.STATIC)
+        self.physics_engine.add_sprite_list(self.zapper_list, friction=0.9, collision_type="item", body_type=arcade.PymunkPhysicsEngine.STATIC)
 
         self.view_left = 0 ## Scrolling Setup
 
@@ -170,7 +201,9 @@ class MyGame(arcade.Window):
             self.floor_list.draw()
             self.player_list.draw()
             self.jumper_list.draw()
-            self.pool_list.draw()
+            self.hill_list.draw()
+            self.zapper_list.draw()
+            self.bridge_list.draw()
             
         if GAME_STATUS == 2:
             arcade.draw_text("Game over, you score was " + str(SCORE), 20, 20, arcade.color.BLACK, 30)
@@ -210,7 +243,7 @@ class MyGame(arcade.Window):
                                     -50,
                                     SCREEN_HEIGHT-50)
 
-            ### ~ Super Jump block ~ ###
+            ### ~ Super Jump and Zapper block ~ ###
 
             SCORE = round(self.player_sprite.center_x / 240)
             CURRENT_BLOCK_NUMBER = SCORE
@@ -219,6 +252,11 @@ class MyGame(arcade.Window):
             if CURRENT_BLOCK_TYPE == 2:     ## Check for super jump block
                 if self.physics_engine.is_on_ground(self.player_sprite):  ## Check if the player is on the ground
                     impulse = (0, PLAYER_JUMP_IMPULSE*2)        ## Make it jump twice the normal height
+                    self.physics_engine.apply_impulse(self.player_sprite, impulse)  ## Apply the jump impulse
+
+            if CURRENT_BLOCK_TYPE == 5:     ## Check for zapper block
+                if self.physics_engine.is_on_ground(self.player_sprite):  ## Check if the player is on the ground
+                    impulse = (PLAYER_JUMP_IMPULSE*5, PLAYER_JUMP_IMPULSE)        ## Make it jump twice the normal height
                     self.physics_engine.apply_impulse(self.player_sprite, impulse)  ## Apply the jump impulse
             
 
