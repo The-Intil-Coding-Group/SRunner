@@ -7,4 +7,6 @@ To access the application, download the branch v1.1.1 on github. Then, in the SR
 ## Helping the Project
 If you would like to help with the project or just want to become part of the coding group who made this project, message me on discord @Linux4Life#3145 and I will get back to you ASAP.
 
+Code can be found [here](https://replit.com/join/dczurxbemg-james531uk)
+
 Thanks for reading about our project, and I hope you enjoy the game.
