@@ -231,8 +231,7 @@ class MyGame(arcade.Window):
             self.bridge_list.draw()
             
         if GAME_STATUS == 2:
-            self.start_list.draw()
-            arcade.draw_text("Game over, you score was " + str(SCORE), 20, 20, arcade.color.BLACK, 30)
+            arcade.draw_text("Game over, you score was " + str(SCORE) + ". Click to restart.", 20, 20, arcade.color.BLACK, 30, font_name="code/resources/font.ttf")
 
     def on_update(self, delta_time):
 
@@ -295,6 +294,12 @@ class MyGame(arcade.Window):
                                 SCREEN_WIDTH,
                                 0,
                                 SCREEN_HEIGHT)
+
+    def on_mouse_press(self, _x, _y, _button, _modifiers):
+        global GAME_STATUS
+
+        self.setup()
+        GAME_STATUS = 1
 
     ### ~ Player Movement ~ ###
 
