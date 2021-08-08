@@ -312,14 +312,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-"""
-Todo list
-- Get the bouncy block working
-- Get the pool working
-- Sync to github
-- Improve the end game screen
-- Correct the colours
-- Start game screen
-- More block types?
-"""
