@@ -174,6 +174,17 @@ class MyGame(arcade.Window):
 
         ## Block type 6 is the gap
 
+        ## Background
+
+        self.bg = arcade.SpriteList()
+
+        for x in range(250):
+            image_source6 ="code/resources/background.png"      ## Background
+            self.bg_sprite = arcade.Sprite(image_source6, 2)
+            self.bg_sprite.center_x = x * 100
+            self.bg_sprite.center_y = 250
+            self.bg.append(self.bg_sprite)
+
 
         ### ~ Physics Engine Setup ~ ###
 
@@ -204,6 +215,7 @@ class MyGame(arcade.Window):
         ## Display the data based on the game status
         
         if GAME_STATUS == 1:
+            self.bg.draw()
             self.floor_list.draw()
             self.player_list.draw()
             self.jumper_list.draw()
