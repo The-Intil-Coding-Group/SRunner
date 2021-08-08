@@ -107,7 +107,7 @@ class MyGame(arcade.Window):
         for x in valuesList:
             self.floor_sprite = arcade.Sprite(image_source2, 1)
             self.floor_sprite.center_x = x
-            self.floor_sprite.center_y = 2
+            self.floor_sprite.center_y = 30
             self.floor_list.append(self.floor_sprite)
 
         ## Create the jumper list and add the sprites to it
@@ -121,7 +121,7 @@ class MyGame(arcade.Window):
         for x in valuesList:
             self.jumper_sprite = arcade.Sprite(image_source3, 1)
             self.jumper_sprite.center_x = x
-            self.jumper_sprite.center_y = 30
+            self.jumper_sprite.center_y = 48
             self.jumper_list.append(self.jumper_sprite)
 
         ## Create the hill list and add the sprites to it
@@ -135,7 +135,7 @@ class MyGame(arcade.Window):
         for x in valuesList:
             self.hill_sprite = arcade.Sprite(image_source4, 1)
             self.hill_sprite.center_x = x
-            self.hill_sprite.center_y = 2
+            self.hill_sprite.center_y = 50
             self.hill_list.append(self.hill_sprite)
 
         ## Create the bridge list and add the sprites to it
@@ -149,7 +149,7 @@ class MyGame(arcade.Window):
         for x in valuesList:
             self.bridge_sprite = arcade.Sprite(image_source4, 1)
             self.bridge_sprite.center_x = x
-            self.bridge_sprite.center_y = 2
+            self.bridge_sprite.center_y = 30
             self.bridge_list.append(self.bridge_sprite)
 
         ## Create the pool list and add the sprites to it
@@ -163,7 +163,7 @@ class MyGame(arcade.Window):
         for x in valuesList:
             self.zapper_sprite = arcade.Sprite(image_source4, 1)
             self.zapper_sprite.center_x = x
-            self.zapper_sprite.center_y = 2
+            self.zapper_sprite.center_y = 50
             self.zapper_list.append(self.zapper_sprite)
 
         ## Block type 6 is the gap
