@@ -1,5 +1,5 @@
 # SRunner
-SRunner is a platformer game, seeing a square run for its life, trying to get as far as it can along a rocky path of special abilities. Coded in Python using Arcade 
+SRunner is a platformer game, seeing a robot run for its life, trying to get as far as it can along a rocky path of special abilities. Coded in Python using Arcade 
 
 ## Accesing the Application
 To access the application, download the branch v1.1.1 on github. Then, in the SRunner/application/build/SRunner folder is the SRunner.exe file. You can run that and then pin it to your taskbar to be able to instantly access it.
