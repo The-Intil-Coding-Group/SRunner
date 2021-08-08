@@ -1,7 +1,7 @@
 """
 Program Name:           SRunner.py
 Creator:                James Ashwood
-Date last modified:     7 Aug 2021
+Date last modified:     8 Aug 2021
 Github Link:            https://github.com/James-Ashwood/SRunner
 """
 
@@ -11,8 +11,6 @@ Github Link:            https://github.com/James-Ashwood/SRunner
 
 import arcade
 from typing import Optional
-import math
-from time import sleep
 import random
 
 ## Constants
@@ -180,11 +178,20 @@ class MyGame(arcade.Window):
 
         for x in range(250):
             image_source6 ="code/resources/background.png"      ## Background
-            self.bg_sprite = arcade.Sprite(image_source6, 2)
-            self.bg_sprite.center_x = x * 100
+            self.bg_sprite = arcade.Sprite(image_source6, 1.2)
+            self.bg_sprite.center_x = x * 600
             self.bg_sprite.center_y = 250
             self.bg.append(self.bg_sprite)
 
+        ## Start button
+
+        self.start_list = arcade.SpriteList()
+        image_source7 ="code/resources/startbutton.png"      ## Block type 5
+
+        self.start_sprite = arcade.Sprite(image_source7, 1)
+        self.start_sprite.center_x = 120
+        self.start_sprite.center_y = 130
+        self.start_list.append(self.start_sprite)
 
         ### ~ Physics Engine Setup ~ ###
 
@@ -224,6 +231,7 @@ class MyGame(arcade.Window):
             self.bridge_list.draw()
             
         if GAME_STATUS == 2:
+            self.start_list.draw()
             arcade.draw_text("Game over, you score was " + str(SCORE), 20, 20, arcade.color.BLACK, 30)
 
     def on_update(self, delta_time):
@@ -293,7 +301,7 @@ class MyGame(arcade.Window):
 
     def on_key_press(self, key, modifiers):
 
-        global CUrRENT_BLOCK_TYPE
+        global CURRENT_BLOCK_TYPE
 
         ## Player jumps if the UP or W key is pressed
         
