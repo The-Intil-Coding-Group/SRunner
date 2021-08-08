@@ -58,7 +58,7 @@ class MyGame(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
         
-        arcade.set_background_color((255,220,220))
+        arcade.set_background_color((101,124,133))
 
         ### ~ Variable Definitions ~ ###
         
@@ -102,7 +102,7 @@ class MyGame(arcade.Window):
         image_source2 ="resources/floor.png"     ## Block type 1
         
         indexList = [i for i in range(len(BLOCKS)) if BLOCKS[i] == 1]
-        valuesList = [i*240-120 for i in indexList]
+        valuesList = [i*200-100 for i in indexList]
         
         for x in valuesList:
             self.floor_sprite = arcade.Sprite(image_source2, 1)
@@ -116,12 +116,12 @@ class MyGame(arcade.Window):
         image_source3 ="resources/jumper.png"    ## Block type 2
         
         indexList = [i for i in range(len(BLOCKS)) if BLOCKS[i] == 2]
-        valuesList = [i*240-120 for i in indexList]
+        valuesList = [i*200-100 for i in indexList]
         
         for x in valuesList:
             self.jumper_sprite = arcade.Sprite(image_source3, 1)
             self.jumper_sprite.center_x = x
-            self.jumper_sprite.center_y = 40
+            self.jumper_sprite.center_y = 30
             self.jumper_list.append(self.jumper_sprite)
 
         ## Create the hill list and add the sprites to it
@@ -130,7 +130,7 @@ class MyGame(arcade.Window):
         image_source4 ="resources/hill.png"      ## Block type 3
         
         indexList = [i for i in range(len(BLOCKS)) if BLOCKS[i] == 3]
-        valuesList = [i*240-120 for i in indexList]
+        valuesList = [i*200-100 for i in indexList]
         
         for x in valuesList:
             self.hill_sprite = arcade.Sprite(image_source4, 1)
@@ -144,7 +144,7 @@ class MyGame(arcade.Window):
         image_source4 ="resources/bridge.png"      ## Block type 4
         
         indexList = [i for i in range(len(BLOCKS)) if BLOCKS[i] == 4]
-        valuesList = [i*240-120 for i in indexList]
+        valuesList = [i*200-100 for i in indexList]
         
         for x in valuesList:
             self.bridge_sprite = arcade.Sprite(image_source4, 1)
@@ -158,7 +158,7 @@ class MyGame(arcade.Window):
         image_source4 ="resources/zapper.png"      ## Block type 5
         
         indexList = [i for i in range(len(BLOCKS)) if BLOCKS[i] == 5]
-        valuesList = [i*240-120 for i in indexList]
+        valuesList = [i*200-100 for i in indexList]
         
         for x in valuesList:
             self.zapper_sprite = arcade.Sprite(image_source4, 1)
@@ -245,7 +245,7 @@ class MyGame(arcade.Window):
 
             ### ~ Super Jump and Zapper block ~ ###
 
-            SCORE = round(self.player_sprite.center_x / 240)
+            SCORE = round(self.player_sprite.center_x / 200)
             CURRENT_BLOCK_NUMBER = SCORE
             CURRENT_BLOCK_TYPE = BLOCKS[CURRENT_BLOCK_NUMBER]
             
