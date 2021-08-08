@@ -298,8 +298,9 @@ class MyGame(arcade.Window):
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         global GAME_STATUS
 
-        self.setup()
-        GAME_STATUS = 1
+        if GAME_STATUS == 2:
+            self.setup()
+            GAME_STATUS = 1
 
     ### ~ Player Movement ~ ###
 
