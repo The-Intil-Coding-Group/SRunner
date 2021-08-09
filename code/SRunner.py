@@ -1,8 +1,8 @@
 """
 Program Name:           SRunner.py
 Creator:                James Ashwood
-Date last modified:     8 Aug 2021
-Github Link:            https://github.com/James-Ashwood/SRunner
+Date last modified:     9 Aug 2021
+Github Link:            https://github.com/The-Intil-Coding-Group/SRunner/
 """
 
 ### ~ Imports and variable definiitions ~ ###
@@ -12,6 +12,8 @@ Github Link:            https://github.com/James-Ashwood/SRunner
 import arcade
 from typing import Optional
 import random
+
+from arcade.window_commands import start_render
 
 ## Constants
 
@@ -42,9 +44,9 @@ RIGHT_VIEWPORT_MARGIN = 250
 
 ## Game specific data
 
-global GAME_STATUS, CURRENT_BLOCK_NUMBER, CURRENT_BLOCK_TYPE, SCORE, BLOCKS
+global GAME_STATUS, CURRENT_BLOCK_NUMBER, CURRENT_BLOCK_TYPE, SCORE, BLOCKS, SELECTED, START_X
 
-GAME_STATUS = 1
+GAME_STATUS = 0
 
 CURRENT_BLOCK_NUMBER = 1
 CURRENT_BLOCK_TYPE = 0
@@ -52,11 +54,14 @@ SCORE = 1
 
 BLOCKS = []
 
+SELECTED = 2
+START_X = 400
+
 class MyGame(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
         
-        arcade.set_background_color((101,124,133))
+        arcade.set_background_color((89, 89, 89))
 
         ### ~ Variable Definitions ~ ###
         
@@ -92,6 +97,22 @@ class MyGame(arcade.Window):
                 BLOCKS.append(x)
 
         ### ~ Sprite Loading And Lists ~ ###
+
+        ## Load up charecter
+
+        self.start_list = arcade.SpriteList()
+        image_sourceA ="code/resources/main.png"       ## Main player
+        self.start_sprite = arcade.Sprite(image_sourceA, 2)
+        self.start_sprite.center_x = 400
+        self.start_sprite.center_y = 150
+        self.start_list.append(self.start_sprite)
+        image_sourceB ="code/resources/floor.png"       ## Floor
+        self.start_sprite = arcade.Sprite(image_sourceB, 2)
+        self.start_sprite.center_x = 500
+        self.start_sprite.center_y = 60
+        self.start_list.append(self.start_sprite)
+
+        ## Player
         
         self.player_list = arcade.SpriteList()
         image_source ="code/resources/main.png"       ## Main player
@@ -183,16 +204,6 @@ class MyGame(arcade.Window):
             self.bg_sprite.center_y = 250
             self.bg.append(self.bg_sprite)
 
-        ## Start button
-
-        self.start_list = arcade.SpriteList()
-        image_source7 ="code/resources/startbutton.png"      ## Block type 5
-
-        self.start_sprite = arcade.Sprite(image_source7, 1)
-        self.start_sprite.center_x = 120
-        self.start_sprite.center_y = 130
-        self.start_list.append(self.start_sprite)
-
         ### ~ Physics Engine Setup ~ ###
 
         ## Set variables
@@ -216,10 +227,18 @@ class MyGame(arcade.Window):
 
         ### ~ Displaying The Game ~ ###
         
-        global GAME_STATUS, SCORE
+        global GAME_STATUS, SCORE, SELECTED
         arcade.start_render()
 
         ## Display the data based on the game status
+
+        if GAME_STATUS == 0:
+            arcade.draw_text("SRunner - Run for victory", 20, 525, arcade.color.BLACK, 50, font_name="code/resources/font.ttf")
+            arcade.draw_text("Play", 20, 485, arcade.color.BLACK, 35, font_name="code/resources/font.ttf")
+            arcade.draw_text("Help", 20, 445, arcade.color.BLACK, 35, font_name="code/resources/font.ttf")
+            arcade.draw_text("Info", 20, 405, arcade.color.BLACK, 35, font_name="code/resources/font.ttf")
+            arcade.draw_text("|", 5, ((40 * SELECTED) + 405), arcade.color.GREEN, 35, font_name="code/resources/font.ttf")
+            self.start_list.draw()
         
         if GAME_STATUS == 1:
             self.bg.draw()
@@ -236,7 +255,14 @@ class MyGame(arcade.Window):
     def on_update(self, delta_time):
 
         ## Check for the right game status        
-        global GAME_STATUS, CURRENT_BLOCK_NUMBER, CURRENT_BLOCK_TYPE, SCORE, BLOCKS
+        global GAME_STATUS, CURRENT_BLOCK_NUMBER, CURRENT_BLOCK_TYPE, SCORE, BLOCKS, START_X
+
+        if GAME_STATUS == 0:
+            for sprite in self.start_list:
+                sprite.center_x = sprite.center_x + 1
+                if sprite.center_x > 1000:
+                    for sprite in self.start_list:
+                        sprite.center_x = sprite.center_x - 1200
 
         if GAME_STATUS == 1:
 
@@ -307,26 +333,41 @@ class MyGame(arcade.Window):
 
     def on_key_press(self, key, modifiers):
 
-        global CURRENT_BLOCK_TYPE
+        global CURRENT_BLOCK_TYPE, GAME_STATUS, SELECTED
 
-        ## Player jumps if the UP or W key is pressed
-        
-        if key == arcade.key.UP or key == arcade.key.W:
-            if self.physics_engine.is_on_ground(self.player_sprite):  ## Check if the player is on the ground
-                impulse = (0, PLAYER_JUMP_IMPULSE)
-                self.physics_engine.apply_impulse(self.player_sprite, impulse)  ## Apply the jump impulse
+        if GAME_STATUS == 1:
 
-        ## If the player moves left or right, apply a force in that direction and turn off friction for the time being
-                  
-        elif key == arcade.key.LEFT or key == arcade.key.A:
-            force = (-PLAYER_MOVE_FORCE_ON_GROUND, 0)
-            self.physics_engine.apply_force(self.player_sprite, force)
-            self.physics_engine.set_friction(self.player_sprite, 0)
+            ## Player jumps if the UP or W key is pressed
             
-        elif key == arcade.key.RIGHT or key == arcade.key.D:
-            force = (PLAYER_MOVE_FORCE_ON_GROUND, 0)
-            self.physics_engine.apply_force(self.player_sprite, force)
-            self.physics_engine.set_friction(self.player_sprite, 0)
+            if key == arcade.key.UP or key == arcade.key.W:
+                if self.physics_engine.is_on_ground(self.player_sprite):  ## Check if the player is on the ground
+                    impulse = (0, PLAYER_JUMP_IMPULSE)
+                    self.physics_engine.apply_impulse(self.player_sprite, impulse)  ## Apply the jump impulse
+
+            ## If the player moves left or right, apply a force in that direction and turn off friction for the time being
+                    
+            elif key == arcade.key.LEFT or key == arcade.key.A:
+                force = (-PLAYER_MOVE_FORCE_ON_GROUND, 0)
+                self.physics_engine.apply_force(self.player_sprite, force)
+                self.physics_engine.set_friction(self.player_sprite, 0)
+                
+            elif key == arcade.key.RIGHT or key == arcade.key.D:
+                force = (PLAYER_MOVE_FORCE_ON_GROUND, 0)
+                self.physics_engine.apply_force(self.player_sprite, force)
+                self.physics_engine.set_friction(self.player_sprite, 0)
+
+        if GAME_STATUS == 0:
+            if key == arcade.key.UP or key == arcade.key.W:
+                SELECTED += 1
+                if SELECTED > 2:
+                    SELECTED = 0
+            if key == arcade.key.DOWN or key == arcade.key.S:
+                SELECTED -= 1
+                if SELECTED < 0:
+                    SELECTED = 2
+            if (key == arcade.key.SPACE or key == arcade.key.ENTER) and (SELECTED == 2):
+                GAME_STATUS = 1
+                self.setup()
             
     def on_key_release(self, key, key_modifiers):
 
