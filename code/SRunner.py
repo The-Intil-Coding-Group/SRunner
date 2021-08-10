@@ -73,7 +73,6 @@ class MyGame(arcade.Window):
         self.floor_sprite = None
         self.pool_sprite = None
         self.jumper_sprite = None
-
         self.physics_engine = Optional[arcade.PymunkPhysicsEngine]
 
     def setup(self):
@@ -250,7 +249,16 @@ class MyGame(arcade.Window):
             self.bridge_list.draw()
             
         if GAME_STATUS == 2:
-            arcade.draw_text("Game over, you score was " + str(SCORE) + ". Click to restart.", 20, 20, arcade.color.BLACK, 30, font_name="code/resources/font.ttf")
+            self.es = arcade.SpriteList()
+
+            image_source7 ="code/resources/endscreen.png"      ## Background
+            self.es_sprite = arcade.Sprite(image_source7, 1.8)
+            self.es_sprite.center_x = 400
+            self.es_sprite.center_y = 300
+            self.es.append(self.es_sprite)
+            self.es.draw()
+            
+            arcade.draw_text("Your score was " + str(SCORE), 20, 20, arcade.color.BLACK, 30, font_name="code/resources/font.ttf")
 
     def on_update(self, delta_time):
 
