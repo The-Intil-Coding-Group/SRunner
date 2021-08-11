@@ -17,7 +17,7 @@ from arcade.window_commands import start_render
 
 ## Constants
 
-SCREEN_WIDTH = 800
+SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "SRunner"
 
@@ -26,9 +26,9 @@ GRAVITY = 1500
 DEFAULT_DAMPING = 1.0
 PLAYER_DAMPING = 0.8
 
-PLAYER_FRICTION = 0.7
-WALL_FRICTION = 0.7
-DYNAMIC_ITEM_FRICTION = 0.6
+PLAYER_FRICTION = 0
+WALL_FRICTION = 0.0
+DYNAMIC_ITEM_FRICTION = 0
 
 PLAYER_MASS = 2.0
 
@@ -41,7 +41,7 @@ PLAYER_JUMP_IMPULSE = 1300
 
 LEFT_VIEWPORT_MARGIN = 250
 RIGHT_VIEWPORT_MARGIN = 250
-
+ACCELERATION_RATE = 0.1
 ## Game specific data
 
 global GAME_STATUS, CURRENT_BLOCK_NUMBER, CURRENT_BLOCK_TYPE, SCORE, BLOCKS, SELECTED, START_X, ANIMATION
@@ -212,7 +212,7 @@ class MyGame(arcade.Window):
 
         for x in range(250):
             image_source6 ="code/resources/background.png"      ## Background
-            self.bg_sprite = arcade.Sprite(image_source6, 1.2)
+            self.bg_sprite = arcade.Sprite(image_source6, 1)
             self.bg_sprite.center_x = x * 600
             self.bg_sprite.center_y = 250
             self.bg.append(self.bg_sprite)
@@ -229,7 +229,7 @@ class MyGame(arcade.Window):
         self.physics_engine = arcade.PymunkPhysicsEngine(damping=damping, gravity=gravity)
         self.physics_engine.add_sprite(self.player, friction=PLAYER_FRICTION, mass=PLAYER_MASS, moment=arcade.PymunkPhysicsEngine.MOMENT_INF, collision_type="player", max_horizontal_velocity=PLAYER_MAX_HORIZONTAL_SPEED, max_vertical_velocity=PLAYER_MAX_VERTICAL_SPEED)
         self.physics_engine.add_sprite_list(self.floor_list, friction=0.6, collision_type="item", body_type=arcade.PymunkPhysicsEngine.STATIC)
-        self.physics_engine.add_sprite_list(self.bridge_list, friction=0.1, collision_type="item", body_type=arcade.PymunkPhysicsEngine.STATIC)
+        self.physics_engine.add_sprite_list(self.bridge_list, friction=0.001, collision_type="item", body_type=arcade.PymunkPhysicsEngine.STATIC)
         self.physics_engine.add_sprite_list(self.jumper_list, friction=0.6, collision_type="item", body_type=arcade.PymunkPhysicsEngine.STATIC)
         self.physics_engine.add_sprite_list(self.hill_list, friction=0.4, collision_type="item", body_type=arcade.PymunkPhysicsEngine.STATIC)
         self.physics_engine.add_sprite_list(self.zapper_list, friction=0.9, collision_type="item", body_type=arcade.PymunkPhysicsEngine.STATIC)
@@ -277,8 +277,8 @@ class MyGame(arcade.Window):
             self.es = arcade.SpriteList()
 
             image_source7 ="code/resources/endscreen.png"      ## Background
-            self.es_sprite = arcade.Sprite(image_source7, 1.8)
-            self.es_sprite.center_x = 400
+            self.es_sprite = arcade.Sprite(image_source7, 1)
+            self.es_sprite.center_x = 550
             self.es_sprite.center_y = 300
             self.es.append(self.es_sprite)
             self.es.draw()
