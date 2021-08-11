@@ -11,7 +11,7 @@ Github Link:            https://github.com/The-Intil-Coding-Group/SRunner/
 
 import arcade
 from typing import Optional
-import random
+from random import randint
 
 from arcade.window_commands import start_render
 
@@ -44,7 +44,7 @@ RIGHT_VIEWPORT_MARGIN = 250
 
 ## Game specific data
 
-global GAME_STATUS, CURRENT_BLOCK_NUMBER, CURRENT_BLOCK_TYPE, SCORE, BLOCKS, SELECTED, START_X
+global GAME_STATUS, CURRENT_BLOCK_NUMBER, CURRENT_BLOCK_TYPE, SCORE, BLOCKS, SELECTED, START_X, ANIMATION
 
 GAME_STATUS = 0
 
@@ -56,6 +56,8 @@ BLOCKS = []
 
 SELECTED = 2
 START_X = 400
+
+ANIMATION = 1
 
 class MyGame(arcade.Window):
     def __init__(self, width, height, title):
@@ -91,7 +93,7 @@ class MyGame(arcade.Window):
         potentialValues = [1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6]
         
         while len(BLOCKS) < 998:
-            x = potentialValues[random.randint(0, len(potentialValues)-1)]
+            x = potentialValues[randint(0, len(potentialValues)-1)]
             if x != BLOCKS[-1]:
                 BLOCKS.append(x)
 
@@ -112,13 +114,25 @@ class MyGame(arcade.Window):
         self.start_list.append(self.start_sprite)
 
         ## Player
-        
+
+        self.players = []
+        self.players_sprites = []
+
         self.player_list = arcade.SpriteList()
-        image_source ="code/resources/main.png"       ## Main player
-        self.player_sprite = arcade.Sprite(image_source, 1)
-        self.player_sprite.center_x = 64
-        self.player_sprite.center_y = 128
-        self.player_list.append(self.player_sprite)
+        image_source ="code/resources/player (1).png"       ## Main player
+        self.player = arcade.Sprite(image_source, 0.1)
+        self.player.center_x = 64
+        self.player.center_y = 128
+        self.player_list.append(self.player)
+
+        for x in range(1,9):           
+            self.players.append(arcade.SpriteList())
+            image_source ="code/resources/player ("+str(x)+").png"       ## Main player
+            self.ani_sprite = arcade.Sprite(image_source, 0.1)
+            self.ani_sprite.center_x = 64
+            self.ani_sprite.center_y = 128
+            self.players_sprites.append(self.ani_sprite)
+            self.players[-1].append(self.ani_sprite)
 
         ## Create the floor list and add the sprites to it
         
@@ -131,7 +145,7 @@ class MyGame(arcade.Window):
         for x in valuesList:
             self.floor_sprite = arcade.Sprite(image_source2, 1.2)
             self.floor_sprite.center_x = x
-            self.floor_sprite.center_y = 36
+            self.floor_sprite.center_y = randint(20, 100)
             self.floor_list.append(self.floor_sprite)
 
         ## Create the jumper list and add the sprites to it
@@ -145,7 +159,7 @@ class MyGame(arcade.Window):
         for x in valuesList:
             self.jumper_sprite = arcade.Sprite(image_source3, 1.2)
             self.jumper_sprite.center_x = x
-            self.jumper_sprite.center_y = 57.6
+            self.jumper_sprite.center_y = randint(20, 100)
             self.jumper_list.append(self.jumper_sprite)
 
         ## Create the hill list and add the sprites to it
@@ -159,7 +173,7 @@ class MyGame(arcade.Window):
         for x in valuesList:
             self.hill_sprite = arcade.Sprite(image_source4, 1.2)
             self.hill_sprite.center_x = x
-            self.hill_sprite.center_y = 60
+            self.hill_sprite.center_y = randint(20, 100)
             self.hill_list.append(self.hill_sprite)
 
         ## Create the bridge list and add the sprites to it
@@ -173,7 +187,7 @@ class MyGame(arcade.Window):
         for x in valuesList:
             self.bridge_sprite = arcade.Sprite(image_source4, 1.2)
             self.bridge_sprite.center_x = x
-            self.bridge_sprite.center_y = 36
+            self.bridge_sprite.center_y = randint(20, 100)
             self.bridge_list.append(self.bridge_sprite)
 
         ## Create the pool list and add the sprites to it
@@ -187,7 +201,7 @@ class MyGame(arcade.Window):
         for x in valuesList:
             self.zapper_sprite = arcade.Sprite(image_source4, 1.2)
             self.zapper_sprite.center_x = x
-            self.zapper_sprite.center_y = 60
+            self.zapper_sprite.center_y = randint(20, 100)
             self.zapper_list.append(self.zapper_sprite)
 
         ## Block type 6 is the gap
@@ -213,7 +227,7 @@ class MyGame(arcade.Window):
         ## Run the functions to create the objects
         
         self.physics_engine = arcade.PymunkPhysicsEngine(damping=damping, gravity=gravity)
-        self.physics_engine.add_sprite(self.player_sprite, friction=PLAYER_FRICTION, mass=PLAYER_MASS, moment=arcade.PymunkPhysicsEngine.MOMENT_INF, collision_type="player", max_horizontal_velocity=PLAYER_MAX_HORIZONTAL_SPEED, max_vertical_velocity=PLAYER_MAX_VERTICAL_SPEED)
+        self.physics_engine.add_sprite(self.player, friction=PLAYER_FRICTION, mass=PLAYER_MASS, moment=arcade.PymunkPhysicsEngine.MOMENT_INF, collision_type="player", max_horizontal_velocity=PLAYER_MAX_HORIZONTAL_SPEED, max_vertical_velocity=PLAYER_MAX_VERTICAL_SPEED)
         self.physics_engine.add_sprite_list(self.floor_list, friction=0.6, collision_type="item", body_type=arcade.PymunkPhysicsEngine.STATIC)
         self.physics_engine.add_sprite_list(self.bridge_list, friction=0.1, collision_type="item", body_type=arcade.PymunkPhysicsEngine.STATIC)
         self.physics_engine.add_sprite_list(self.jumper_list, friction=0.6, collision_type="item", body_type=arcade.PymunkPhysicsEngine.STATIC)
@@ -240,9 +254,20 @@ class MyGame(arcade.Window):
             self.start_list.draw()
         
         if GAME_STATUS == 1:
+            ## Update animation
+
+            global ANIMATION
+
+            ## Draw
+
             self.bg.draw()
+            
+            ANIMATION += 1
+            if ANIMATION == 9:
+                ANIMATION = 1
+            self.players[ANIMATION-1].draw()
+
             self.floor_list.draw()
-            self.player_list.draw()
             self.jumper_list.draw()
             self.hill_list.draw()
             self.zapper_list.draw()
@@ -274,6 +299,10 @@ class MyGame(arcade.Window):
 
         if GAME_STATUS == 1:
 
+            for x in range(0,8):
+                self.players_sprites[x].center_x = self.player.center_x
+                self.players_sprites[x].center_y = self.player.center_y
+
             self.physics_engine.step()  ## Update the physics engine
 
             ### ~ Scrolling ~ ###
@@ -283,13 +312,13 @@ class MyGame(arcade.Window):
             ## Check if the player is moving towards the edges, if so then move the viewport values and update the changed variable
 
             left_boundary = self.view_left + LEFT_VIEWPORT_MARGIN
-            if self.player_sprite.left < left_boundary:
-                self.view_left -= left_boundary - self.player_sprite.left
+            if self.player.left < left_boundary:
+                self.view_left -= left_boundary - self.player.left
                 changed =  True
                 
             right_boundary = self.view_left + SCREEN_WIDTH - RIGHT_VIEWPORT_MARGIN
-            if self.player_sprite.right > right_boundary:
-                self.view_left += self.player_sprite.right - right_boundary
+            if self.player.right > right_boundary:
+                self.view_left += self.player.right - right_boundary
                 changed = True
 
             ## If it has changed, write out the thing
@@ -304,24 +333,24 @@ class MyGame(arcade.Window):
 
             ### ~ Super Jump and Zapper block ~ ###
 
-            SCORE = round(self.player_sprite.center_x / 240)
+            SCORE = round(self.player.center_x / 240)
             CURRENT_BLOCK_NUMBER = SCORE
             CURRENT_BLOCK_TYPE = BLOCKS[CURRENT_BLOCK_NUMBER]
             
             if CURRENT_BLOCK_TYPE == 2:     ## Check for super jump block
-                if self.physics_engine.is_on_ground(self.player_sprite):  ## Check if the player is on the ground
+                if self.physics_engine.is_on_ground(self.player):  ## Check if the player is on the ground
                     impulse = (0, PLAYER_JUMP_IMPULSE*2)        ## Make it jump twice the normal height
-                    self.physics_engine.apply_impulse(self.player_sprite, impulse)  ## Apply the jump impulse
+                    self.physics_engine.apply_impulse(self.player, impulse)  ## Apply the jump impulse
 
             if CURRENT_BLOCK_TYPE == 5:     ## Check for zapper block
-                if self.physics_engine.is_on_ground(self.player_sprite):  ## Check if the player is on the ground
+                if self.physics_engine.is_on_ground(self.player):  ## Check if the player is on the ground
                     impulse = (PLAYER_JUMP_IMPULSE*5, PLAYER_JUMP_IMPULSE)        ## Make it jump twice the normal height
-                    self.physics_engine.apply_impulse(self.player_sprite, impulse)  ## Apply the jump impulse
+                    self.physics_engine.apply_impulse(self.player, impulse)  ## Apply the jump impulse
             
 
         ### ~ Preparing the game status ~ ###
 
-        if self.player_sprite.center_y < -400:
+        if self.player.center_y < -400:
             GAME_STATUS = 2
             
             arcade.set_viewport(0,
@@ -348,21 +377,21 @@ class MyGame(arcade.Window):
             ## Player jumps if the UP or W key is pressed
             
             if key == arcade.key.UP or key == arcade.key.W:
-                if self.physics_engine.is_on_ground(self.player_sprite):  ## Check if the player is on the ground
+                if self.physics_engine.is_on_ground(self.player):  ## Check if the player is on the ground
                     impulse = (0, PLAYER_JUMP_IMPULSE)
-                    self.physics_engine.apply_impulse(self.player_sprite, impulse)  ## Apply the jump impulse
+                    self.physics_engine.apply_impulse(self.player, impulse)  ## Apply the jump impulse
 
             ## If the player moves left or right, apply a force in that direction and turn off friction for the time being
                     
             elif key == arcade.key.LEFT or key == arcade.key.A:
                 force = (-PLAYER_MOVE_FORCE_ON_GROUND, 0)
-                self.physics_engine.apply_force(self.player_sprite, force)
-                self.physics_engine.set_friction(self.player_sprite, 0)
+                self.physics_engine.apply_force(self.player, force)
+                self.physics_engine.set_friction(self.player, 0)
                 
             elif key == arcade.key.RIGHT or key == arcade.key.D:
                 force = (PLAYER_MOVE_FORCE_ON_GROUND, 0)
-                self.physics_engine.apply_force(self.player_sprite, force)
-                self.physics_engine.set_friction(self.player_sprite, 0)
+                self.physics_engine.apply_force(self.player, force)
+                self.physics_engine.set_friction(self.player, 0)
 
         if GAME_STATUS == 0:
             if key == arcade.key.UP or key == arcade.key.W:
@@ -382,7 +411,7 @@ class MyGame(arcade.Window):
         ## When the keys is release, start the friction again
         
         if key in [arcade.key.RIGHT, arcade.key.D, arcade.key.LEFT, arcade.key.A]:
-            self.physics_engine.set_friction(self.player_sprite, 0.4)
+            self.physics_engine.set_friction(self.player, 0.4)
 
 ### ~ Running The Game ~ ###
 
